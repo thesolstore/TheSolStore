@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import { WalletProvider } from './components/common/WalletProvider';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
@@ -33,7 +33,7 @@ const App: FC = () => {
             },
           }}
         />
-        <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <Router>
           <Navbar />
           <main className="container mx-auto px-4 py-8 flex-grow">
             <Routes>
