@@ -4,7 +4,7 @@ import { resolve } from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: '/TheSolStore/', // Updated to match your repository name
+  base: '/TheSolStore/',
   plugins: [react()],
   resolve: {
     alias: {
@@ -15,6 +15,14 @@ export default defineConfig({
     outDir: 'dist',
     assetsDir: 'assets',
     sourcemap: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          solana: ['@solana/web3.js', '@solana/wallet-adapter-react'],
+        },
+      },
+    },
   },
   server: {
     port: 3000,
