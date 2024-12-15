@@ -42,9 +42,10 @@ const Cart: FC = () => {
   const totalSOL = solPrice ? (totalUSD / solPrice) : 0;
 
   const handleAddressSubmit = (address: ShippingAddress) => {
+    console.log('Setting shipping address:', address);
     setShippingAddress(address);
     setShowAddressForm(false);
-    handlePayment();
+    // Don't call handlePayment here, let the user confirm first
   };
 
   const handlePaymentClick = () => {
@@ -55,22 +56,7 @@ const Cart: FC = () => {
 
     // Check if shipping address exists
     if (!userProfile.shippingAddress) {
-      toast((t) => (
-        <div>
-          <p className="mb-2">Please add a shipping address to continue</p>
-          <button
-            onClick={() => {
-              setShowAddressForm(true);
-              toast.dismiss(t.id);
-            }}
-            className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors text-sm"
-          >
-            Add Address
-          </button>
-        </div>
-      ), {
-        duration: 5000,
-      });
+      setShowAddressForm(true);
       return;
     }
 
@@ -84,7 +70,7 @@ const Cart: FC = () => {
           <p className="text-sm mb-1">{userProfile.shippingAddress.address2}</p>
         )}
         <p className="text-sm mb-1">
-          {userProfile.shippingAddress.city}, {userProfile.shippingAddress.state} {userProfile.shippingAddress.zipCode}
+          {userProfile.shippingAddress.city}, {userProfile.shippingAddress.state} {userProfile.shippingAddress.zip}
         </p>
         <p className="text-sm mb-3">{userProfile.shippingAddress.country}</p>
         
@@ -100,16 +86,7 @@ const Cart: FC = () => {
           </label>
         </div>
 
-        <div className="flex space-x-2">
-          <button
-            onClick={() => {
-              toast.dismiss(t.id);
-              handlePayment();
-            }}
-            className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors text-sm"
-          >
-            Confirm
-          </button>
+        <div className="flex justify-between space-x-2">
           <button
             onClick={() => {
               setShowAddressForm(true);
@@ -117,12 +94,21 @@ const Cart: FC = () => {
             }}
             className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors text-sm"
           >
-            Change
+            Change Address
+          </button>
+          <button
+            onClick={() => {
+              handlePayment();
+              toast.dismiss(t.id);
+            }}
+            className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors text-sm"
+          >
+            Confirm & Pay
           </button>
         </div>
       </div>
     ), {
-      duration: 10000,
+      duration: 0, // Don't auto-dismiss
     });
   };
 
@@ -251,8 +237,12 @@ const Cart: FC = () => {
           
           // Create Printify order
           try {
+            if (!userProfile.shippingAddress) {
+              throw new Error('Shipping address is required');
+            }
+
             const countryCode = 'US';  // Always US
-            const stateCode = getStateCode(userProfile.shippingAddress.state);  // Convert state to proper code
+            const stateCode = userProfile.shippingAddress.state || '';
 
             const shippingAddress = {
               first_name: userProfile.shippingAddress.first_name,
@@ -260,7 +250,7 @@ const Cart: FC = () => {
               address1: userProfile.shippingAddress.address1,
               address2: userProfile.shippingAddress.address2 || '',
               city: userProfile.shippingAddress.city,
-              state: stateCode,
+              region: stateCode,  // Changed from state to region
               country: countryCode,
               zip: userProfile.shippingAddress.zip,
               email: userProfile.shippingAddress.email,

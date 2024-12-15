@@ -372,7 +372,7 @@ export const createPrintifyOrder = async (orderInput: PrintifyOrderInput): Promi
       address1: orderInput.shipping_address.address1,
       address2: orderInput.shipping_address.address2 || '',
       city: orderInput.shipping_address.city,
-      state: getStateCode(orderInput.shipping_address.state),
+      region: getStateCode(orderInput.shipping_address.state),
       country: 'US',
       zip: orderInput.shipping_address.zip,
       phone: orderInput.shipping_address.phone || '',

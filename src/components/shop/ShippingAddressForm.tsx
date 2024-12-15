@@ -1,5 +1,6 @@
 import { FC, useState } from 'react';
 import { MapPin } from 'lucide-react';
+import toast from 'react-hot-toast'; // Import toast
 
 export interface ShippingAddress {
   first_name: string;
@@ -96,15 +97,36 @@ export const ShippingAddressForm: FC<ShippingAddressFormProps> = ({ onSubmit, de
     region: defaultAddress?.state || ''
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log('Form data:', formData);
+    
+    // Validate required fields
+    const requiredFields = ['first_name', 'last_name', 'email', 'address1', 'city', 'state', 'zip', 'country'];
+    const missingFields = requiredFields.filter(field => !formData[field]);
+    
+    if (missingFields.length > 0) {
+      toast.error(`Please fill in all required fields: ${missingFields.join(', ')}`);
+      return;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      toast.error('Please enter a valid email address');
+      return;
+    }
+
+    // Validate zip code format (5 digits)
+    const zipRegex = /^\d{5}$/;
+    if (!zipRegex.test(formData.zip)) {
+      toast.error('Please enter a valid 5-digit zip code');
+      return;
+    }
+
     onSubmit({
       ...formData,
-      country: 'US',
-      country_code: 'US',
-      country_name: 'United States',
-      state: formData.state,
-      region: formData.region
+      region: formData.state // Ensure region is set for Printify
     });
   };
 

@@ -4,6 +4,7 @@ import { resolve } from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: '/The-Sol-Store/', // Add this line for GitHub Pages
   plugins: [react()],
   resolve: {
     alias: {

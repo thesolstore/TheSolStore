@@ -11,7 +11,7 @@ interface Props {
 
 export const WalletProvider: FC<Props> = ({ children }) => {
   const endpoint = useMemo(() => {
-    const rpcEndpoint = 'https://api.devnet.solana.com';
+    const rpcEndpoint = 'https://api.testnet.solana.com';
     return {
       endpoint: rpcEndpoint,
       config: {
